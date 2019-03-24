@@ -1,0 +1,203 @@
+WEEK 3 SQL exercises
+Questions
+
+? Write a SQL query to get the third highest salary of an employee from employee_table
+? Write a SQL query to find the names of employees that begin with ÔAÕ 
+? What is the difference between ÔHAVINGÕ CLAUSE and a ÔWHEREÕ CLAUSE 
+? List, and explain the elements of an Entities and Relationships model 
+? What are the different categories of SQL statements, what does each group do 
+? List, and explain, the different types of joins 
+? What is the difference between NULL value, Zero, and Blank space 
+? Write a SQL query that returns the employee name and title for all employees with even number as actual salary (to_date is 9999-01-01) 
+? What is wrong with the following query, re-write it making the needed corrections. 
+SELECT employee.emp_no, AVG(salaries.salary) 
+FROM employee INNER JOIN salaries AT employee.emp_no = salaries.emp_no 
+HAVING AVG(salaries.salary) > 100000 
+GROUP BY employee.emp_no
+
+SOLUTIONS
+Write a SQL query to get the third highest salary of an employee from employee_table
+
+SELECT employees.emp_no, first_name, last_name, salary
+FROM employees
+JOIN salaries ON employees.emp_no=salaries.emp_no
+WHERE to_date = '9999-01-01'
+ORDER BY salary DESC
+LIMIT 2,1;
+
+Takes the top two and then returns the next row (third)
+alternative
+LIMIT 1 OFFSET 2;
+Takes the top result then offsets by two (third)
+
+Write a SQL query to find the names of employees that begin with ÔAÕ 
+
+SELECT first_name
+FROM employees
+WHERE first_name like 'A%';
+
+What is the difference between ÔHAVINGÕ CLAUSE and a ÔWHEREÕ CLAUSE
+
+Aggregate functions can't be used inÊWHEREÊclauses. This means that if you want to filter based on the result of an aggregate function, you need another way! You can use theÊHAVINGÊclause. TheÊWHEREÊclause is used to filter records from a result. The filtering occurs before any groupings are made. WhenÊGROUP BYÊis not used, theÊWHEREÊandÊHAVINGÊclauses are essentially equivalent
+
+List, and explain the elements of an Entities and Relationships model
+
+ER modelling is based on two concepts:
+* Entities,Êdefined as tables that hold specific information (data)
+* Relationships,Êdefined as the associations or interactions between entities
+
+AnÊentityÊis an object in the real world with an independent existence thatÊcan be differentiated from other objects. An entity might be
+* An object with physical existenceÊ(e.g., a lecturer, a student, a car)
+* An object with conceptual existenceÊ(e.g., a course, a job, a position)
+
+An entityÕs existence is dependent on the existence of the related entity. It is existence-dependent if it has a mandatory foreign keyÊ(i.e.,Êa foreign key attribute that cannot be null).
+
+Independent entities, also referred to as kernels, are the backbone of the database. They areÊwhat other tables are based on.ÊKernelsÊhave the following characteristics:
+* They are the building blocks of a database.
+* The primary key may be simple or composite.
+* The primary key is not a foreign key.
+* They do not depend on another entity for their existence.
+
+Characteristic entitiesÊprovide more information about another table. These entities have the following characteristics:
+* They represent multivalued attributes.
+* They describe other entities.
+* They typically have a one to many relationship.
+* The foreign key is used to further identify the characterized table.
+* Options for primary key are as follows:
+    1.	Use a composite of foreign key plus a qualifying column
+2.	Create a new simple primary key. In the COMPANY database, these might include:
+o Employee (EID,ÊName, Address, Age, Salary) Ð EID is the simple primary key.
+o EmployeePhone (EID, Phone) Ð EID is part of a composite primary key. Here, EID is also a foreign key.
+
+Dependent entities, also referred to asÊderived entities, depend on other tables for their meaning.ÊThese entities have the following characteristics:
+* Dependent entities are used to connect two kernels together.
+* They are said to be existence dependent on two or more tables.
+* Many to many relationships become associative tables with at least two foreign keys.
+	¥ They may contain other attributes.
+	¥ The foreign key identifies each associated table.
+	¥ There are three options for the primary key:
+	1. Use a composite of foreign keys of associated tables if unique
+	2. Use a composite of foreign keys and a qualifying column
+	3. Create a new simple primary key
+
+Each entity is described by a set of attributesÊ(e.g., Employee = (Name, Address, Birthdate (Age), Salary).
+
+Each attribute has a name, and is associated with an entity and a domain of legal values.
+
+Simple attributesÊare those drawn from the atomic value domains; they are also calledÊsingle-valued attributes. In the COMPANY database, an example of this would be:ÊName = {John} ; Age = {23}
+
+Composite attributesÊare those that consist of a hierarchy of attributes.ÊUsing our database example, and shown in Figure 8.3, Address may consist of Number, Street and Suburb. So this would be written as ? Address = {59 + ÔMeek StreetÕ + ÔKingsfordÕ}
+
+MultivaluedÊattributesÊare attributes that have a set of values for each entity. An example of a multivalued attribute from the COMPANY database are the degrees of an employee: BSc, MIT, PhD.
+
+Derived attributesÊare attributes that contain values calculated from other attributes. Age can be derived from the attribute Birthdate. In this situation,ÊBirthdate is called aÊstored attribute,Êwhich is physically saved to the database.
+
+TheÊkeyÊis an attribute or a group of attributes whose values can be used to uniquely identify an individual entity in an entity set.
+
+Keys
+AÊcandidate keyÊis a simple or composite key that is unique and minimal.Ê It is unique because no two rows in a table may have the same value at any time. It is minimal because every column is necessary in order to attain uniqueness.
+
+AÊcomposite keyÊis composed of two or more attributes, but it must be minimal.
+Using the example from the candidate key section, possible compositeÊkeys are:
+* First Name and Last Name Ð assuming there is no one else in the company with the same name
+* Last Name and Department ID Ð assuming two people with the same last name donÕt work in the same department
+
+The primary key is a candidate key that is selected by the database designer to be used as an identifying mechanism for the whole entity set. It must uniquely identify tuples in a table and not be null. The primary key is indicated in the ER model by underlining the attribute.
+* A candidate key is selected by the designer to uniquely identify tuples in a table. It must not be null.
+* A key is chosen by the database designer to be used as an identifying mechanism for the whole entity set.Ê This is referred to as the primary key. This key is indicated by underlining the attribute in the ER model.
+
+AÊsecondary keyÊis an attribute used strictly for retrieval purposes (can be composite), for example: Phone and Last Name.
+
+Alternate keysÊare all candidate keys not chosen as the primary key.
+
+AÊforeign key (FK)Êis an attribute in a table that references the primary key in another table OR it can be null. Both foreign and primary keys must be of the same data type.
+
+What are the different categories of SQL statements, what does each group do?
+
+DDL (Data Definition Language)
+
+The part of SQL that allows a database user to create and restructure database objects, such as the creation or the deletion of a table.
+Some of the most fundamental DDL commands discussed during following hours include the following:
+* CREATE TABLE
+* ALTER TABLE
+* DROP TABLE
+* CREATE INDEX
+* ALTER INDEX
+* DROP INDEX
+* CREATE VIEW
+* DROP VIEW
+
+DML (Data Manipulation Language)
+The part of SQL used to manipulate data within objects of a relational database.
+There are three basic DML commands:
+* INSERT
+* UPDATE
+* DELETE
+
+DQL (Data Query Language)
+
+Although also considered part of DML, the select statement is also sometimes considered its own category.  ItÊis used to compose queries against a relational database. AÊqueryÊis an inquiry to the database for information.
+
+DCL (Data Control Language)
+
+Data control commands in SQL allow you to control access to data within the database. These DCL commands are normally used to create objects related to user access and also control the distribution of privileges among users. Some data control commands are as follows:
+* ALTER PASSWORD
+* GRANT
+* REVOKE
+* CREATE SYNONYM
+
+Transactional control commands
+
+These are commands that allow the user to manage database transactions.
+* COMMITÊSaves database transactions
+* ROLLBACKÊUndoes database transactions
+* SAVEPOINTÊCreates points within groups of transactions in which toÊROLLBACK
+* SET TRANSACTIONÊPlaces a name on a transaction
+
+List, and explain, the different types of joins 
+
+A SELF JOIN is a query in which a table is joined (compared) to itself.ÊÊSelf-joins are used to compare values in a column with other values in theÊsame column in the same table.
+
+INNER JOINÊ(a.k.a. Òsimple joinÓ): Returns all rows for which there is at least one match in BOTH tables.ÊThis is the default type of join if no specificÊJOINÊtype is specified.
+
+LEFT JOINÊ(orÊLEFT OUTER JOIN): Returns all rows from the left table, and the matched rows from the right table; i.e., the results will containÊallÊrecords from the left table, even if theÊJOINÊcondition doesnÕt find any matching records in the right table. This means that if theÊONÊclause doesnÕt match any records in the right table, theÊJOINÊwill still return a row in the result for that record in the left table, but with NULL in each column from the right table.
+
+RIGHT JOINÊ(orÊRIGHT OUTER JOIN): Returns all rows from the right table, and the matched rows from the left table. This is the exact opposite of aÊLEFT JOIN; i.e., the results will containÊallÊrecords from the right table, even if theÊJOINÊcondition doesnÕt find any matching records in the left table. This means that if theÊONÊclause doesnÕt match any records in the left table, theÊJOINÊwill still return a row in the result for that record in the right table, but with NULL in each column from the left table.
+
+FULL JOINÊ(orÊFULL OUTER JOIN): Returns all rows for which there is a match in EITHER of the tables. Conceptually, aÊFULL JOINÊcombines the effect of applying both aÊLEFT JOINÊand aÊRIGHT JOIN; i.e., its result set is equivalent to performing aÊUNIONÊof the results of left and right outer queries.
+
+CROSS JOIN: Returns all records where each row from the first table is combined with each row from the second table (i.e., returns the Cartesian product of the sets of rows from the joined tables). Note that aÊCROSS JOINÊcan either be specified using theÊCROSS JOINÊsyntax (Òexplicit join notationÓ) or (b) listing the tables in theÊFROMÊclause separated by commas without using aÊWHEREÊclause to supply join criteria (Òimplicit join notationÓ).
+
+What is the difference between NULL value, Zero, and Blank space 
+
+ÒZeroÓ is a value. It is the known quantity of zero, which is meaningful in arithmetic and other math.
+
+"Null" is a non-value. It is a "placeholder" for a data value that is not known or not specified. It is only meaningful in this context; mathematical operations cannot be performed on null (the result of any such operation is undefined, and therefore also generally represented as null).
+
+The SQL zero-length string (empty string or blank) is specified by two single quote characters. The empty string ('') isÊnotÊthe same thing as NULL. An empty string is a defined value, a string that contains no characters, a string of length 0. A zero-length string is represented internally by the non-display character $CHAR(0).
+
+Write a SQL query that returns the employee name and title for all employees with even number as actual salary (to_date is 9999-01-01). (All salaries in the output will be even)
+
+SELECT first_name, last_name, salary, title
+FROM employees
+JOIN salaries ON employees.emp_no = salaries.emp_no
+JOIN titles ON employees.emp_no = titles.emp_no
+WHERE salaries.to_date = '9999-01-01'
+AND titles.to_date = '9999-01-01'
+AND salary % 2 = 0;
+
+What is wrong with the following query, re-write it making the needed corrections. 
+
+SELECT employee.emp_no, AVG(salaries.salary) 
+FROM employee 
+INNER JOIN salaries AT employee.emp_no = salaries.emp_no 
+HAVING AVG(salaries.salary) > 10000 
+GROUP BY employee.emp_no
+
+CORRECTED STATEMENT
+
+SELECT employees.emp_no, AVG(salary)
+FROM employees
+JOIN salaries ON employees.emp_no=salaries.emp_no
+GROUP BY employees.emp_no
+HAVING AVG(salary) > 100000;
